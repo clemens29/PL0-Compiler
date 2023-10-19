@@ -1,2 +1,2 @@
 # PL0-Compiler
-Bauen eines Compilers in PL0.
+Bauen eines Compilers für PL0 in Java.
