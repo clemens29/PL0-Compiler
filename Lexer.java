@@ -16,17 +16,83 @@ public class Lexer {
         /* 70 */  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0
     };
 
-    static char[] automatentabelle1 = {
-        /*          0    1   2   3   4   5   6   7      */
-        /* z0 */
-        /* z1 */
-        /* z2 */
-        /* z3 */
-        /* z4 */
-        /* z5 */
-        /* z6 */
-        /* z7 */
-        /* z8 */
+    // Zustände des Automaten
+    public class State {
+        int nextState;
+        public State(int nextState) {
+            this.nextState = nextState;
+        }
+        abstract void action();
+    }
+
+    // lesen
+    public class l extends State {
+        public l(int nextState) {
+            super(nextState);
+        }
+
+        void action() {
+            // Zeichen lesen
+            
+        }
+    }
+
+    // beenden
+    public class b extends State {
+        public b(int nextState) {
+            super(nextState);
+        }
+
+        void action() {
+            // beenden
+        }
+    }
+
+    // schreiben 
+    public class sgl extends State {
+        public sgl(int nextState) {
+            super(nextState);
+        }
+
+        void action() {
+
+        }
+    }
+
+    // schreiben, lesen
+    public class sl extends State {
+        public sl(int nextState) {
+            super(nextState);
+        }
+
+        void action() {
+            
+        }
+    }
+
+    // schreiben, lesen, beenden
+    public class slb extends State {
+        public slb(int nextState) {
+            super(nextState);
+        }
+
+        void action() {
+            
+        }
+    }
+
+    // Automatentabelle 
+    char[] automatentabelle1 = {
+        /*          0   1   2   3   4   5   6   7      */
+        /* z0 */    new fslb(0), new slb(1), new sgl(2), new sl(3), new slb(0), new sl(4), new sl(5), new b(0),
+        /* z1 */    new b(0), new sl(1), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0),
+        /* z2 */    new b(0), new sl(2), new sgl(2), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0),
+        /* z3 */    new b(0), new b(0), new b(0), new b(0), new sl(6), new b(0), new b(0), new b(0), new b(0),
+        /* z4 */    new b(0), new b(0), new b(0), new b(0), new sl(7), new b(0), new b(0), new b(0), new b(0),
+        /* z5 */    new b(0), new b(0), new b(0), new b(0), new sl(8), new b(0), new b(0), new b(0), new b(0),
+        /* z6 */    new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0),
+        /* z7 */    new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0),
+        /* z8 */    new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0)
     }
 
     public static void main(String args[]) {
