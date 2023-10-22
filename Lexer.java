@@ -104,8 +104,6 @@ public class Lexer {
         }
 
         void action() {
-            sl();
-            b();
         }
     }
 
