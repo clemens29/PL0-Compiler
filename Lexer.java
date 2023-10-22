@@ -1,27 +1,29 @@
 public class Lexer {
 
-    // Zeichenklassen 
-    // 0: Sonderzeichen     1: Ziffern      2: Buchstaben 
-    // 3: :     4: =    5: <    6: >    7: sonstige 
+    // Zeichenklassen
+    // 0: Sonderzeichen 1: Ziffern 2: Buchstaben
+    // 3: : 4: = 5: < 6: > 7: sonstige
 
     static char[] zeichenklassen = {
-        /*        0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F   */
-        /* 0 */   7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,  
-        /* 10 */  7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-        /* 20 */  7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        /* 30 */  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 0, 5, 4, 6, 0,
-        /* 40 */  0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-        /* 50 */  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0,
-        /* 60 */  0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-        /* 70 */  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0
+            /* 0 1 2 3 4 5 6 7 8 9 A B C D E F */
+            /* 0 */ 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            /* 10 */ 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            /* 20 */ 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            /* 30 */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 0, 5, 4, 6, 0,
+            /* 40 */ 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            /* 50 */ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0,
+            /* 60 */ 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            /* 70 */ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0
     };
 
     // Zustände des Automaten
-    public class State {
+    public abstract class State {
         int nextState;
+
         public State(int nextState) {
             this.nextState = nextState;
         }
+
         abstract void action();
     }
 
@@ -32,8 +34,7 @@ public class Lexer {
         }
 
         void action() {
-            // Zeichen lesen
-            
+
         }
     }
 
@@ -44,11 +45,11 @@ public class Lexer {
         }
 
         void action() {
-            // beenden
+
         }
     }
 
-    // schreiben 
+    // schreiben
     public class sgl extends State {
         public sgl(int nextState) {
             super(nextState);
@@ -66,7 +67,7 @@ public class Lexer {
         }
 
         void action() {
-            
+
         }
     }
 
@@ -77,14 +78,14 @@ public class Lexer {
         }
 
         void action() {
-            
+
         }
     }
 
-    // Automatentabelle 
-    char[] automatentabelle1 = {
+    // Automatentabelle
+    State[] automatentabelle1 = {
         /*          0   1   2   3   4   5   6   7      */
-        /* z0 */    new fslb(0), new slb(1), new sgl(2), new sl(3), new slb(0), new sl(4), new sl(5), new b(0),
+        /* z0 */    new slb(0), new slb(1), new sgl(2), new sl(3), new slb(0), new sl(4), new sl(5), new b(0),
         /* z1 */    new b(0), new sl(1), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0),
         /* z2 */    new b(0), new sl(2), new sgl(2), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0),
         /* z3 */    new b(0), new b(0), new b(0), new b(0), new sl(6), new b(0), new b(0), new b(0), new b(0),
@@ -96,6 +97,6 @@ public class Lexer {
     }
 
     public static void main(String args[]) {
-        
+
     }
 }
