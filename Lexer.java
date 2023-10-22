@@ -4,10 +4,13 @@ public class Lexer {
 
     private InputStream in;
     private int state;
+    private static int X;
+    private static int line, col;
 
     public Lexer(InputStream inputStream) {
         state = 0;
         in = inputStream;
+        line = col = 0;
     }
 
     public void printFile() throws Exception {
@@ -41,7 +44,7 @@ public class Lexer {
             this.nextState = nextState;
         }
 
-        abstract void action();
+        abstract void action() throws Exception;
     }
 
     // lesen
@@ -50,8 +53,14 @@ public class Lexer {
             super(nextState);
         }
 
-        void action() {
-
+        void action() throws Exception {
+            X = in.read();
+            if (X == '\n') {
+                line++;
+                col = 0;
+            } else {
+                col++;
+            }
         }
     }
 
@@ -95,7 +104,8 @@ public class Lexer {
         }
 
         void action() {
-
+            sl();
+            b();
         }
     }
 
