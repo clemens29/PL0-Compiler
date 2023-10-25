@@ -1,28 +1,35 @@
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.Buffer;
+
+enum TokenType {
+    IDENTIFIER, NUMBER, PLUS, MINUS, TIMES, SLASH, ODD, EQL, NEQ, LSS, LEQ, GTR, GEQ, LPAREN, RPAREN, COMMA, SEMICOLON,
+    PERIOD, BECOMES, BEGIN, END, IF, THEN, WHILE, DO, CALL, CONST, VAR, PROCEDURE, WRITE, READ;
+}
+
+class Token {
+    public TokenType type;
+    public String value;
+
+    public Token(TokenType type, String value) {
+        this.type = type;
+        this.value = value;
+    }
+}
 
 public class Lexer {
-
     private InputStream in;
-    private int state;
-    private static int X;
-    private static int line, col;
+    private BufferedReader reader;
+    private char currentChar;
+    private StringBuilder currentTokenValue;
 
-    public Lexer(InputStream inputStream) {
-        state = 0;
+    public Lexer(InputStream inputStream) throws Exception {
         in = inputStream;
-        line = col = 0;
+        reader = new BufferedReader(new InputStreamReader(in));
+        currentChar = (char) reader.read();
+        currentTokenValue = new StringBuilder();
     }
-
-    public void printFile() throws Exception {
-        int c;
-        while ((c = in.read()) != -1) {
-            System.out.print((char) c);
-        }
-    }
-
-    // Zeichenklassen
-    // 0: Sonderzeichen 1: Ziffern 2: Buchstaben
-    // 3: : 4: = 5: < 6: > 7: sonstige
 
     static int[] zeichenklassen = {
             /* 0 1 2 3 4 5 6 7 8 9 A B C D E F */
@@ -36,90 +43,16 @@ public class Lexer {
             /* 70 */ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0
     };
 
-    // Zustände des Automaten
-    public abstract class State {
-        int nextState;
-
-        public State(int nextState) {
-            this.nextState = nextState;
-        }
-
-        abstract void action() throws Exception;
-    }
-
-    // lesen
-    public class l extends State {
-        public l(int nextState) {
-            super(nextState);
-        }
-
-        void action() throws Exception {
-            X = in.read();
-            if (X == '\n') {
-                line++;
-                col = 0;
-            } else {
-                col++;
-            }
+    public void printFile() throws Exception {
+        int c;
+        while ((c = in.read()) != -1) {
+            System.out.print((char) c);
         }
     }
 
-    // beenden
-    public class b extends State {
-        public b(int nextState) {
-            super(nextState);
-        }
-
-        void action() {
-
-        }
-    }
-
-    // schreiben
-    public class sgl extends State {
-        public sgl(int nextState) {
-            super(nextState);
-        }
-
-        void action() {
-
-        }
-    }
-
-    // schreiben, lesen
-    public class sl extends State {
-        public sl(int nextState) {
-            super(nextState);
-        }
-
-        void action() {
-
-        }
-    }
-
-    // schreiben, lesen, beenden
-    public class slb extends State {
-        public slb(int nextState) {
-            super(nextState);
-        }
-
-        void action() {
-        }
-    }
-
-    // Automatentabelle
-    State[] automatentabelle1 = {
-            /* 0 1 2 3 4 5 6 7 */
-            /* z0 */ new slb(0), new slb(1), new sgl(2), new sl(3), new slb(0), new sl(4), new sl(5), new b(0),
-            /* z1 */ new b(0), new sl(1), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0),
-            /* z2 */ new b(0), new sl(2), new sgl(2), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0),
-            /* z3 */ new b(0), new b(0), new b(0), new b(0), new sl(6), new b(0), new b(0), new b(0), new b(0),
-            /* z4 */ new b(0), new b(0), new b(0), new b(0), new sl(7), new b(0), new b(0), new b(0), new b(0),
-            /* z5 */ new b(0), new b(0), new b(0), new b(0), new sl(8), new b(0), new b(0), new b(0), new b(0),
-            /* z6 */ new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0),
-            /* z7 */ new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0),
-            /* z8 */ new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0)
-    };
+    // Zeichenklassen
+    // 0: Sonderzeichen 1: Ziffern 2: Buchstaben
+    // 3: : 4: = 5: < 6: > 7: sonstige
 
     public static void main(String args[]) throws Exception {
         String path = args[0];
@@ -128,7 +61,5 @@ public class Lexer {
             System.out.println("File not found");
             return;
         }
-        Lexer lexer = new Lexer(inputStream);
-        lexer.printFile();
     }
 }
