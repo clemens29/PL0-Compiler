@@ -31,6 +31,9 @@ public class Lexer {
         currentTokenValue = new StringBuilder();
     }
 
+    // Zeichenklassen
+    // 0: Sonderzeichen 1: Ziffern 2: Buchstaben
+    // 3: : 4: = 5: < 6: > 7: sonstige
     static int[] zeichenklassen = {
             /* 0 1 2 3 4 5 6 7 8 9 A B C D E F */
             /* 0 */ 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
@@ -43,16 +46,15 @@ public class Lexer {
             /* 70 */ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0
     };
 
-    public void printFile() throws Exception {
-        int c;
-        while ((c = in.read()) != -1) {
-            System.out.print((char) c);
+    public Token getNextToken() throws Exception {
+        int zeichenklasse;
+        int nextState;
+        while (currentChar != -1) {
+            zeichenklasse = zeichenklassen[currentChar];
+            nextState = 
         }
+    
     }
-
-    // Zeichenklassen
-    // 0: Sonderzeichen 1: Ziffern 2: Buchstaben
-    // 3: : 4: = 5: < 6: > 7: sonstige
 
     public static void main(String args[]) throws Exception {
         String path = args[0];

@@ -1,0 +1,15 @@
+
+
+    //Automatentabelle
+    State[] automatentabelle1 = {
+            /* 0 1 2 3 4 5 6 7 */
+            /* z0 */ new slb(0), new slb(1), new sgl(2), new sl(3), new slb(0), new sl(4), new sl(5), new b(0),
+            /* z1 */ new b(0), new sl(1), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0),
+            /* z2 */ new b(0), new sl(2), new sgl(2), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0),
+            /* z3 */ new b(0), new b(0), new b(0), new b(0), new sl(6), new b(0), new b(0), new b(0), new b(0),
+            /* z4 */ new b(0), new b(0), new b(0), new b(0), new sl(7), new b(0), new b(0), new b(0), new b(0),
+            /* z5 */ new b(0), new b(0), new b(0), new b(0), new sl(8), new b(0), new b(0), new b(0), new b(0),
+            /* z6 */ new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0),
+            /* z7 */ new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0),
+            /* z8 */ new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0)
+    };
