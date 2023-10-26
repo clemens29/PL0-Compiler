@@ -3,8 +3,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 enum TokenType {
-    IDENTIFIER, NUMBER, PLUS, MINUS, TIMES, SLASH, ODD, EQL, NEQ, LSS, LEQ, GTR, GEQ, LPAREN, RPAREN, COMMA, SEMICOLON,
-    PERIOD, BECOMES, BEGIN, END, IF, THEN, WHILE, DO, CALL, CONST, VAR, PROCEDURE, WRITE, READ;
+    IDENTIFIER, NUMBER, PLUS, MINUS, 
 }
 
 class Token {
@@ -37,13 +36,12 @@ public class Lex {
             } else if (Character.isDigit(currentChar)) {
                 return readNumber();
             } else {
-                // Handle operators, punctuation, and other symbols
+                // Handle operators
                 switch (currentChar) {
                     case '+':
                         currentChar = (char) reader.read();
                         return new Token(TokenType.PLUS, "+");
-                    // Add cases for other operators and symbols
-                    // ...
+                    // Add cases
                     default:
                         // Handle unknown characters or report an error
                         currentChar = (char) reader.read();
@@ -67,20 +65,6 @@ public class Lex {
         }
 
         String tokenValue = currentTokenValue.toString();
-        switch (tokenValue) {
-            case "BEGIN":
-                return new Token(TokenType.BEGIN, tokenValue);
-            case "END":
-                return new Token(TokenType.END, tokenValue);
-            case "IF":
-                return new Token(TokenType.IF, tokenValue);
-            case "THEN":
-                return new Token(TokenType.THEN, tokenValue);
-            // Add cases for other keywords
-            // ...
-            default:
-                return new Token(TokenType.IDENTIFIER, tokenValue);
-        }
     }
 
     private Token readNumber() throws IOException {
@@ -97,7 +81,7 @@ public class Lex {
     }
 
     public static void main(String[] args) throws IOException {
-        Lex lexer = new Lex("../PL0-Compiler/src/fakult.pl0");
+        Lex lexer = new Lex("../src/fakult.pl0");
         Token token;
         while ((token = lexer.getNextToken()) != null) {
             System.out.println("Token: " + token.type + ", Value: " + token.value);
