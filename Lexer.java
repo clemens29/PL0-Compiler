@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.Buffer;
 
 enum TokenType {
     NIL, SYM, NUM, IDENT;
@@ -16,6 +15,7 @@ public class Lexer {
     private String currentTokenValue;
     private Token t;
     private String currentToken;
+    private boolean end;
 
     public Lexer(InputStream inputStream) throws Exception {
         in = inputStream;
@@ -62,23 +62,24 @@ public class Lexer {
     }
 
     void fb() {
-        switch(currentState) {
-            case 3: //:
-            case 4: //<
-            case 5: //>
-            case 6: //=
-            case 7: //<=
-            case 8: //>=
-            case 0: //sonstige
+        switch (currentState) {
+            case 3: // :
+            case 4: // <
+            case 5: // >
+            case 6: // =
+            case 7: // <=
+            case 8: // >=
+            case 0: // sonstige
                 t = new Token(TokenType.SYM, currentTokenValue.toString());
                 break;
-            case 1: //Zahl
-                t = new Token(TokenType.NUM ,currentTokenValue.toString());
+            case 1: // Zahl
+                t = new Token(TokenType.NUM, currentTokenValue.toString());
                 break;
-            case 2: //Buchstabe
+            case 2: // Buchstabe
                 t = new Token(TokenType.IDENT, currentTokenValue.toString());
                 break;
         }
+        end = true;
     }
 
     class l extends State {
@@ -140,7 +141,6 @@ public class Lexer {
         }
     }
 
-
     // Zeichenklassen
     // 0: Sonderzeichen 1: Ziffern 2: Buchstaben
     // 3: : 4: = 5: < 6: > 7: sonstige
@@ -156,25 +156,26 @@ public class Lexer {
             /* 70 */ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0
     };
 
-    //Automatentabelle
+    // Automatentabelle
     State[][] automatentabelle = {
-            /*          0           1            2          3           4           5       6         7 */
-            /* z0 */ {new slb(0), new sl(1), new sgl(2), new sl(3), new slb(0), new sl(4), new sl(5), new l(0)},
-            /* z1 */ {new b(0), new sl(1), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0)},
-            /* z2 */ {new b(0), new sl(2), new sgl(2), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0)},
-            /* z3 */ {new b(0), new b(0), new b(0), new b(0), new sl(6), new b(0), new b(0), new b(0), new b(0)},
-            /* z4 */ {new b(0), new b(0), new b(0), new b(0), new sl(7), new b(0), new b(0), new b(0), new b(0)},
-            /* z5 */ {new b(0), new b(0), new b(0), new b(0), new sl(8), new b(0), new b(0), new b(0), new b(0)},
-            /* z6 */ {new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0)},
-            /* z7 */ {new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0)},
-            /* z8 */ {new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0)}
+            /* 0 1 2 3 4 5 6 7 */
+            /* z0 */ { new slb(0), new sl(1), new sgl(2), new sl(3), new slb(0), new sl(4), new sl(5), new l(0) },
+            /* z1 */ { new b(0), new sl(1), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0) },
+            /* z2 */ { new b(0), new sl(2), new sgl(2), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0) },
+            /* z3 */ { new b(0), new b(0), new b(0), new b(0), new sl(6), new b(0), new b(0), new b(0), new b(0) },
+            /* z4 */ { new b(0), new b(0), new b(0), new b(0), new sl(7), new b(0), new b(0), new b(0), new b(0) },
+            /* z5 */ { new b(0), new b(0), new b(0), new b(0), new sl(8), new b(0), new b(0), new b(0), new b(0) },
+            /* z6 */ { new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0) },
+            /* z7 */ { new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0) },
+            /* z8 */ { new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0), new b(0) }
     };
 
     public Token getNextToken() throws Exception {
         int zeichenklasse;
         currentTokenValue = "";
         currentToken = "";
-        while (currentChar != -1) {
+        end = false;
+        while (!end) {
             zeichenklasse = zeichenklassen[currentChar];
             nextState = automatentabelle[currentState][zeichenklasse];
             nextState.action();
@@ -193,7 +194,7 @@ public class Lexer {
         Lexer lexer = new Lexer(inputStream);
         Token token;
         while ((token = lexer.getNextToken()) != null) {
-            System.out.println(token);
+            System.out.println(token.type + " " + token.value);
         }
 
     }
