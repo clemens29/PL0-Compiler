@@ -38,12 +38,12 @@ public class Lexer {
     abstract class State {
         public int state;
 
-        public State(int State) {
+        public State(int state) {
             this.state = state;
         }
 
         public int getState() {
-            return state;
+            return this.state;
         }
 
         public abstract void action();
@@ -176,7 +176,12 @@ public class Lexer {
         currentToken = "";
         end = false;
         while (!end) {
-            zeichenklasse = zeichenklassen[currentChar];
+            try {
+                zeichenklasse = zeichenklassen[currentChar];
+            } catch (Exception e) {
+                t = new Token(TokenType.NIL, currentTokenValue);
+                break;
+            }
             nextState = automatentabelle[currentState][zeichenklasse];
             nextState.action();
             currentState = nextState.getState();
@@ -193,9 +198,8 @@ public class Lexer {
         }
         Lexer lexer = new Lexer(inputStream);
         Token token;
-        while ((token = lexer.getNextToken()) != null) {
+        while ((token = lexer.getNextToken()).type != TokenType.NIL) {
             System.out.println(token.type + " " + token.value);
         }
-
     }
 }
