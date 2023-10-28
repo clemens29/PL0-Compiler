@@ -6,6 +6,21 @@ enum TokenType {
     NIL, SYM, NUM, IDENT;
 }
 
+enum Token_Value {
+    NIL(0), BEGIN(128), CALL(129), CONST(130), DO(131), END(132),
+    IF(133), ODD(134), PROCEDURE(135), THEN(136), VAR(137), WHILE(138);
+
+    private int value;
+
+    Token_Value(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return this.value;
+    }
+}
+
 public class Lexer {
     private InputStream in;
     private int currentState;
@@ -16,6 +31,8 @@ public class Lexer {
     private Token t;
     private String currentToken;
     private boolean end;
+    private String[] keywords = { "BEGIN", "CALL", "CONST", "DO", "END", "IF", "ODD", "PROCEDURE", "THEN",
+            "VAR", "WHILE" };
 
     public Lexer(InputStream inputStream) throws Exception {
         in = inputStream;
@@ -49,6 +66,19 @@ public class Lexer {
         public abstract void action();
     }
 
+    Token schlwort() {
+        Token t = null;
+        for (int i = 0; i < keywords.length; i++) {
+            if (keywords[i].equals(currentTokenValue)) {
+                t = new Token(TokenType.SYM, Integer.toString(Token_Value.valueOf(keywords[i]).getValue()));
+                break;
+            } else {
+                t = new Token(TokenType.IDENT, currentTokenValue);
+            }
+        }
+        return t;
+    }
+
     void fl() {
         try {
             currentChar = (char) reader.read();
@@ -70,13 +100,13 @@ public class Lexer {
             case 7: // <=
             case 8: // >=
             case 0: // sonstige
-                t = new Token(TokenType.SYM, currentTokenValue.toString());
+                t = new Token(TokenType.SYM, currentTokenValue);
                 break;
             case 1: // Zahl
-                t = new Token(TokenType.NUM, currentTokenValue.toString());
+                t = new Token(TokenType.NUM, currentTokenValue);
                 break;
             case 2: // Buchstabe
-                t = new Token(TokenType.IDENT, currentTokenValue.toString());
+                t = schlwort();
                 break;
         }
         end = true;
