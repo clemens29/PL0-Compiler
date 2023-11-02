@@ -34,8 +34,10 @@ public class Lexer {
     public String[] keywords = { "BEGIN", "CALL", "CONST", "DO", "END", "IF", "ODD", "PROCEDURE", "THEN",
             "VAR", "WHILE" };
 
-    public Lexer(InputStream inputStream) throws Exception {
-        in = inputStream;
+    public Lexer() {}
+
+    public Lexer(String file) throws Exception {
+        in = Lexer.class.getResourceAsStream(file);
         reader = new BufferedReader(new InputStreamReader(in));
         currentTokenValue = new String();
         currentToken = new String();
@@ -221,12 +223,11 @@ public class Lexer {
 
     public static void main(String args[]) throws Exception {
         String path = args[0];
-        InputStream inputStream = Lexer.class.getResourceAsStream(path);
-        if (inputStream == null) {
+        if (path == null) {
             System.out.println("File not found");
             return;
         }
-        Lexer lexer = new Lexer(inputStream);
+        Lexer lexer = new Lexer(path);
         Token token;
         while ((token = lexer.getNextToken()).type != TokenType.NIL) {
             System.out.println(token.type + " " + token.value);
