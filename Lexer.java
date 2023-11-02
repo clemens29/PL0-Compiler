@@ -10,7 +10,7 @@ enum Token_Value {
     NIL(0), BEGIN(128), CALL(129), CONST(130), DO(131), END(132),
     IF(133), ODD(134), PROCEDURE(135), THEN(136), VAR(137), WHILE(138);
 
-    private int value;
+    public int value;
 
     Token_Value(int value) {
         this.value = value;
@@ -22,16 +22,16 @@ enum Token_Value {
 }
 
 public class Lexer {
-    private InputStream in;
-    private int currentState;
-    private State nextState;
-    private BufferedReader reader;
-    private char currentChar;
-    private String currentTokenValue;
-    private Token t;
-    private String currentToken;
-    private boolean end;
-    private String[] keywords = { "BEGIN", "CALL", "CONST", "DO", "END", "IF", "ODD", "PROCEDURE", "THEN",
+    public InputStream in;
+    public int currentState;
+    public State nextState;
+    public BufferedReader reader;
+    public char currentChar;
+    public String currentTokenValue;
+    public Token t;
+    public String currentToken;
+    public boolean end;
+    public String[] keywords = { "BEGIN", "CALL", "CONST", "DO", "END", "IF", "ODD", "PROCEDURE", "THEN",
             "VAR", "WHILE" };
 
     public Lexer(InputStream inputStream) throws Exception {
@@ -42,9 +42,9 @@ public class Lexer {
     }
 
     class Token {
-        private TokenType type;
-        private String value;
-        private int line, col;
+        public TokenType type;
+        public String value;
+        public int line, col;
 
         public Token(TokenType type, String value) {
             this.type = type;
