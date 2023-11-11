@@ -8,7 +8,8 @@ enum TokenType {
 
 enum Token_Value {
     NIL(0), BEGIN(128), CALL(129), CONST(130), DO(131), END(132),
-    IF(133), ODD(134), PROCEDURE(135), THEN(136), VAR(137), WHILE(138);
+    IF(133), ODD(134), PROCEDURE(135), THEN(136), VAR(137), WHILE(138),
+    EQ(139), NEQ(140), LE(141), LT(142), GE(143), GT(144);
 
     public int value;
 
@@ -34,7 +35,8 @@ public class Lexer {
     public String[] keywords = { "BEGIN", "CALL", "CONST", "DO", "END", "IF", "ODD", "PROCEDURE", "THEN",
             "VAR", "WHILE" };
 
-    public Lexer() {}
+    public Lexer() {
+    }
 
     public Lexer(String file) throws Exception {
         in = Lexer.class.getResourceAsStream(file);
