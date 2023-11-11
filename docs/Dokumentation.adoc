@@ -4,6 +4,7 @@ Clemens Näther <s85426@htw-dresden.de>
 :toc: 
 :toc-title: Inhaltsverzeichnis
 :source-highlighter: rouge
+:imagesdir: imgs
 // Platzhalter für weitere Dokumenten-Attribute 
 
 == Einführung
@@ -24,5 +25,8 @@ Ein Compiler ist ein Programm, das Quellcode in eine andere Programmiersprache �
 
 === Aufbau der Graphen
 
-image::imgs/graph_edited.png[Graphen, width=100%]
+.Der Graph für die Grammatikregeln des Parsers
+image::graph_edited.png[]
+
+
 
