@@ -62,7 +62,9 @@ public class Parser extends Lexer {
     Edge[] gFact;
     Edge[] gCondition;
 
-    public Parser() {
+    public Parser(String file) throws Exception {
+        super(file);
+
         gProgramm = new Edge[] {
                 new EdgeGraph(gBlock, 1, 0),
                 new EdgeSymbol((int) '.', 2, 0),
@@ -164,9 +166,56 @@ public class Parser extends Lexer {
                 new EdgeGraph(gExpr, 10, 0),
                 new EdgeEnd(0, 0)
         };
+
     }
 
-    public static void main(String args[]) {
+    boolean parse(Edge[] graph) {
+        int i = 0;
 
+        while (true) {
+            if (graph[i] instanceof EdgeNil) {
+                i = graph[i].next;
+            } else if (graph[i] instanceof EdgeSymbol) {
+                if (currentChar == ((EdgeSymbol) graph[i]).symbol) {
+                    i = graph[i].next;
+                } else {
+                    i = graph[i].alt;
+                }
+            } else if (graph[i] instanceof EdgeToken) {
+                if (currentToken.equals(((EdgeToken) graph[i]).token.value)) {
+                    i = graph[i].next;
+                } else {
+                    i = graph[i].alt;
+                }
+            } else if (graph[i] instanceof EdgeGraph) {
+                if (parse(((EdgeGraph) graph[i]).graph)) {
+                    i = graph[i].next;
+                } else {
+                    i = graph[i].alt;
+                }
+            } else if (graph[i] instanceof EdgeEnd) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        String file = args[0];
+        Parser Parser = new Parser(file);
+
+        try {
+            boolean success = Parser.parse(Parser.gProgramm);
+
+            if (success) {
+                System.out.println("Parsing erfolgreich!");
+            } else {
+                System.out.println("Fehler beim Parsen.");
+            }
+        } catch (Exception e) {
+            // Behandle Ausnahmen, die während des Parsens auftreten können
+            e.printStackTrace();
+        }
     }
 }

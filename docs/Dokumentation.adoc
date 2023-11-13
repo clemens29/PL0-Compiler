@@ -4,7 +4,7 @@ Clemens Näther <s85426@htw-dresden.de>
 :toc: 
 :toc-title: Inhaltsverzeichnis
 :source-highlighter: rouge
-:imagesdir: ../imgs
+:imagesdir: imgs
 // Platzhalter für weitere Dokumenten-Attribute 
 
 == Einführung
