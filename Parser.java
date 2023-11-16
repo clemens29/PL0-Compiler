@@ -179,7 +179,7 @@ public class Parser extends Lexer {
             if (edge instanceof EdgeGraph) success = parse(((EdgeGraph)edge).graph);
             if (edge instanceof EdgeEnd) return true;
 
-            success = edge.action();
+            success = success && edge.action();
 
             if (!success) {
                 if (edge.alt != 0) edge = graph[edge.alt];
