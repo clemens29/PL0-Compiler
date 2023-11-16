@@ -29,7 +29,7 @@ public class Lexer {
     public BufferedReader reader;
     public char currentChar;
     public String currentTokenValue;
-    public Token t;
+    public Token t = new Token();
     public String currentToken;
     public boolean end;
     public String[] keywords = { "BEGIN", "CALL", "CONST", "DO", "END", "IF", "ODD", "PROCEDURE", "THEN",
@@ -40,15 +40,23 @@ public class Lexer {
 
     public Lexer(String file) throws Exception {
         in = Lexer.class.getResourceAsStream(file);
+        if (in == null) {
+            throw new IllegalArgumentException("File not found: " + file);
+        }
         reader = new BufferedReader(new InputStreamReader(in));
         currentTokenValue = new String();
         currentToken = new String();
     }
+    
 
     class Token {
         public TokenType type;
         public String value;
         public int line, col;
+
+        public Token() {
+            this.type = TokenType.NIL;
+        }
 
         public Token(TokenType type, String value) {
             this.type = type;
@@ -88,6 +96,7 @@ public class Lexer {
             currentChar = (char) reader.read();
         } catch (Exception e) {
             System.out.println("Fehler: " + e);
+            System.exit(-1);
         }
     }
 
@@ -209,6 +218,7 @@ public class Lexer {
         currentTokenValue = "";
         currentToken = "";
         end = false;
+        if (t.type == TokenType.SYM && t.value == ".") return t;
         while (!end) {
             try {
                 zeichenklasse = zeichenklassen[currentChar];
