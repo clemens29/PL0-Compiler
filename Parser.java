@@ -170,35 +170,8 @@ public class Parser extends Lexer {
     }
 
     boolean parse(Edge[] graph) {
-        int i = 0;
 
-        while (true) {
-            if (graph[i] instanceof EdgeNil) {
-                i = graph[i].next;
-            } else if (graph[i] instanceof EdgeSymbol) {
-                if (currentChar == ((EdgeSymbol) graph[i]).symbol) {
-                    i = graph[i].next;
-                } else {
-                    i = graph[i].alt;
-                }
-            } else if (graph[i] instanceof EdgeToken) {
-                if (currentToken.equals(((EdgeToken) graph[i]).token.value)) {
-                    i = graph[i].next;
-                } else {
-                    i = graph[i].alt;
-                }
-            } else if (graph[i] instanceof EdgeGraph) {
-                if (parse(((EdgeGraph) graph[i]).graph)) {
-                    i = graph[i].next;
-                } else {
-                    i = graph[i].alt;
-                }
-            } else if (graph[i] instanceof EdgeEnd) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+        return false;
     }
 
     public static void main(String[] args) throws Exception {
