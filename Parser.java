@@ -94,7 +94,7 @@ public class Parser extends Lexer {
         };
         gBlock[1] = new EdgeToken(lexer.new Token(TokenType.IDENT, null), 2, 0);
         gBlock[2] = new EdgeSymbol((int) '=', 3, 0);
-        gBlock[3] = new EdgeToken(lexer.new Token(TokenType.NUM, null), 4, 5);
+        gBlock[3] = new EdgeToken(lexer.new Token(TokenType.NUM, null), 4, 0);
         gBlock[4] = new EdgeSymbol((int) ',', 1, 5);
         gBlock[5] = new EdgeSymbol((int) ';', 7, 0);
         gBlock[6] = new EdgeNil(7, 0);
@@ -126,7 +126,7 @@ public class Parser extends Lexer {
         };
         gExpr[1] = new EdgeGraph(gTerm, 3, 0);
         gExpr[2] = new EdgeGraph(gTerm, 3, 0);
-        gExpr[3] = new EdgeNil(4, 8);
+        gExpr[3] = new EdgeNil(4, 0);
         gExpr[4] = new EdgeSymbol((int) '+', 6, 5);
         gExpr[5] = new EdgeSymbol((int) '-', 7, 8);
         gExpr[6] = new EdgeGraph(gTerm, 3, 0);
@@ -146,7 +146,7 @@ public class Parser extends Lexer {
                 return true;
             }
         };
-        gTerm[1] = new EdgeNil(2, 6);
+        gTerm[1] = new EdgeNil(2, 0);
         gTerm[2] = new EdgeSymbol((int) '*', 4, 3);
         gTerm[3] = new EdgeSymbol((int) '/', 5, 6);
         gTerm[4] = new EdgeGraph(gFact, 1, 0);
@@ -176,8 +176,8 @@ public class Parser extends Lexer {
         gStatement[8] = new EdgeSymbol(Token_Value.EQ.value, 16, 0);
         gStatement[9] = new EdgeGraph(gCondition, 17, 0);
         gStatement[10] = new EdgeGraph(gCondition, 18, 0);
-        gStatement[11] = new EdgeGraph(gStatement, 19, 12);
-        gStatement[12] = new EdgeSymbol((int) ';', 11, 0);
+        gStatement[11] = new EdgeGraph(gStatement, 12, 0);
+        gStatement[12] = new EdgeSymbol((int) ';', 11, 19);
         gStatement[13] = new EdgeToken(lexer.new Token(TokenType.IDENT, null), 22, 0);
         gStatement[14] = new EdgeToken(lexer.new Token(TokenType.IDENT, null), 22, 0);
         gStatement[15] = new EdgeGraph(gExpr, 22, 0);
@@ -223,13 +223,13 @@ public class Parser extends Lexer {
             }
         };
         gCondition[1] = new EdgeGraph(gExpr, 3, 0);
-        gCondition[2] = new EdgeGraph(gExpr, 5, 0);
-        gCondition[3] = new EdgeSymbol(Token_Value.EQ.value, 9, 4);
-        gCondition[4] = new EdgeSymbol(Token_Value.NEQ.value, 9, 4);
-        gCondition[5] = new EdgeSymbol(Token_Value.LT.value, 9, 4);
-        gCondition[6] = new EdgeSymbol(Token_Value.GT.value, 9, 4);
-        gCondition[7] = new EdgeSymbol(Token_Value.LE.value, 9, 4);
-        gCondition[8] = new EdgeSymbol(Token_Value.GE.value, 9, 4);
+        gCondition[2] = new EdgeGraph(gExpr, 10, 0);
+        gCondition[3] = new EdgeSymbol((int) '=', 9, 4);
+        gCondition[4] = new EdgeSymbol((int) '#', 9, 5);
+        gCondition[5] = new EdgeSymbol((int) '<', 9, 6);
+        gCondition[6] = new EdgeSymbol((int) '>', 9, 7);
+        gCondition[7] = new EdgeSymbol(Token_Value.LE.value, 9, 8);
+        gCondition[8] = new EdgeSymbol(Token_Value.GE.value, 9, 0);
         gCondition[9] = new EdgeGraph(gExpr, 10, 0);
         gCondition[10] = new EdgeEnd(0, 0) {
             public boolean action() {
@@ -247,10 +247,10 @@ public class Parser extends Lexer {
             t = lexer.getNextToken();
         }
         int i = 0;
-        System.out.println(t.type + " " + t.value);
+        
 
         while (true) {
-
+            for(int j=0; j<graph.length; j++)if(graph[j]==edge)System.out.print("->"+j+" ");
             System.out.println(i + " " + edge.getClass().getName());
             i++;
             if (edge instanceof EdgeNil) {
@@ -258,15 +258,16 @@ public class Parser extends Lexer {
                 System.out.println("new Nil");
             }
             if (edge instanceof EdgeSymbol) {
-                success = (((EdgeSymbol) edge).symbol == (t.value).charAt(0));
+                System.out.println(t.value + " " + ((EdgeSymbol) edge).symbol);
+                success = (t.type==TokenType.SYM) && (((EdgeSymbol) edge).symbol == (t.value.length() == 1? (int)t.value.charAt(0):Integer.parseInt(t.value)));
                 System.out.println("new Symbol " + t.value);
             }
             if (edge instanceof EdgeToken) {
-                success = (((EdgeToken) edge).token == t);
+                success = (((EdgeToken) edge).token.type == t.type);
                 System.out.println("new Token " + t.value);
             }
             if (edge instanceof EdgeGraph) {
-                System.out.println("new Graph " + t.value);
+                System.out.println("new Graph " + t.value + "\n");
                 success = parse(((EdgeGraph) edge).graph);
 
             }

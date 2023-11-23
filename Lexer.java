@@ -109,9 +109,6 @@ public class Lexer {
             case 3: // :
             case 4: // <
             case 5: // >
-            case 6: // =
-            case 7: // <=
-            case 8: // >=
             case 0: // sonstige
                 t = new Token(TokenType.SYM, currentTokenValue);
                 break;
@@ -120,6 +117,15 @@ public class Lexer {
                 break;
             case 2: // Buchstabe
                 t = schlwort();
+                break;
+            case 6: // :=
+            t = new Token(TokenType.SYM, ""+Token_Value.EQ.value);
+                break;
+            case 7: // <=
+                t = new Token(TokenType.SYM, ""+Token_Value.LE.value);
+                break;
+            case 8: // >=
+                t = new Token(TokenType.SYM, ""+Token_Value.GE.value);
                 break;
         }
         end = true;
