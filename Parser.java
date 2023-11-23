@@ -128,7 +128,7 @@ public class Parser extends Lexer {
         gExpr[2] = new EdgeGraph(gTerm, 3, 0);
         gExpr[3] = new EdgeNil(4, 8);
         gExpr[4] = new EdgeSymbol((int) '+', 6, 5);
-        gExpr[5] = new EdgeSymbol((int) '-', 7, 0);
+        gExpr[5] = new EdgeSymbol((int) '-', 7, 8);
         gExpr[6] = new EdgeGraph(gTerm, 3, 0);
         gExpr[7] = new EdgeGraph(gTerm, 3, 0);
         gExpr[8] = new EdgeNil(9, 0);
@@ -148,7 +148,7 @@ public class Parser extends Lexer {
         };
         gTerm[1] = new EdgeNil(2, 6);
         gTerm[2] = new EdgeSymbol((int) '*', 4, 3);
-        gTerm[3] = new EdgeSymbol((int) '/', 5, 0);
+        gTerm[3] = new EdgeSymbol((int) '/', 5, 6);
         gTerm[4] = new EdgeGraph(gFact, 1, 0);
         gTerm[5] = new EdgeGraph(gFact, 1, 0);
         gTerm[6] = new EdgeNil(7, 0);
