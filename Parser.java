@@ -61,7 +61,7 @@ public class Parser extends Lexer {
     Edge[] gBlock = new Edge[20];
     Edge[] gExpr = new Edge[10];
     Edge[] gTerm = new Edge[8];
-    Edge[] gStatement = new Edge[23]; 
+    Edge[] gStatement = new Edge[23];
     Edge[] gFact = new Edge[6];
     Edge[] gCondition = new Edge[11];
 
@@ -70,16 +70,32 @@ public class Parser extends Lexer {
         lexer = new Lexer(file);
 
         // Für gProgramm
-        gProgramm[0] = new EdgeGraph(gBlock, 1, 0) {public boolean action() {System.out.println("Start Programm"); return true;}};
+        gProgramm[0] = new EdgeGraph(gBlock, 1, 0) {
+            public boolean action() {
+                System.out.println("Start Programm");
+                return true;
+            }
+        };
         gProgramm[1] = new EdgeSymbol((int) '.', 2, 0);
-        gProgramm[2] = new EdgeEnd(0, 0) {public boolean action() {System.out.println("End Programm");; return true;}};
+        gProgramm[2] = new EdgeEnd(0, 0) {
+            public boolean action() {
+                System.out.println("End Programm");
+                ;
+                return true;
+            }
+        };
 
         // Für gBlock
-        gBlock[0] = new EdgeSymbol(Token_Value.CONST.value, 1, 6) {public boolean action() {System.out.println("Start Block"); return true;}};
+        gBlock[0] = new EdgeSymbol(Token_Value.CONST.value, 1, 6) {
+            public boolean action() {
+                System.out.println("Start Block");
+                return true;
+            }
+        };
         gBlock[1] = new EdgeToken(lexer.new Token(TokenType.IDENT, null), 2, 0);
         gBlock[2] = new EdgeSymbol((int) '=', 3, 0);
         gBlock[3] = new EdgeToken(lexer.new Token(TokenType.NUM, null), 4, 5);
-        gBlock[4] = new EdgeSymbol((int) ',', 1, 0);
+        gBlock[4] = new EdgeSymbol((int) ',', 1, 5);
         gBlock[5] = new EdgeSymbol((int) ';', 7, 0);
         gBlock[6] = new EdgeNil(7, 0);
         gBlock[7] = new EdgeSymbol(Token_Value.VAR.value, 8, 11);
@@ -94,10 +110,20 @@ public class Parser extends Lexer {
         gBlock[16] = new EdgeSymbol((int) ';', 12, 0);
         gBlock[17] = new EdgeNil(18, 0);
         gBlock[18] = new EdgeGraph(gStatement, 19, 0);
-        gBlock[19] = new EdgeEnd(0, 0) {public boolean action() {System.out.println("End Block"); return true;}};
+        gBlock[19] = new EdgeEnd(0, 0) {
+            public boolean action() {
+                System.out.println("End Block");
+                return true;
+            }
+        };
 
         // Für gExpr
-        gExpr[0] = new EdgeSymbol((int) '-', 2, 0) {public boolean action() {System.out.println("Start Expression"); return true;}};
+        gExpr[0] = new EdgeSymbol((int) '-', 2, 1) {
+            public boolean action() {
+                System.out.println("Start Expression");
+                return true;
+            }
+        };
         gExpr[1] = new EdgeGraph(gTerm, 3, 0);
         gExpr[2] = new EdgeGraph(gTerm, 3, 0);
         gExpr[3] = new EdgeNil(4, 8);
@@ -106,20 +132,40 @@ public class Parser extends Lexer {
         gExpr[6] = new EdgeGraph(gTerm, 3, 0);
         gExpr[7] = new EdgeGraph(gTerm, 3, 0);
         gExpr[8] = new EdgeNil(9, 0);
-        gExpr[9] = new EdgeEnd(0, 0) {public boolean action() {System.out.println("End Expression"); return true;}};
+        gExpr[9] = new EdgeEnd(0, 0) {
+            public boolean action() {
+                System.out.println("End Expression");
+                return true;
+            }
+        };
 
         // Für gTerm
-        gTerm[0] = new EdgeGraph(gFact, 1, 0) {public boolean action() {System.out.println("Start Term"); return true;}};
+        gTerm[0] = new EdgeGraph(gFact, 1, 0) {
+            public boolean action() {
+                System.out.println("Start Term");
+                return true;
+            }
+        };
         gTerm[1] = new EdgeNil(2, 6);
         gTerm[2] = new EdgeSymbol((int) '*', 4, 3);
         gTerm[3] = new EdgeSymbol((int) '/', 5, 0);
         gTerm[4] = new EdgeGraph(gFact, 1, 0);
         gTerm[5] = new EdgeGraph(gFact, 1, 0);
         gTerm[6] = new EdgeNil(7, 0);
-        gTerm[7] = new EdgeEnd(0, 0) {public boolean action() {System.out.println("End Term"); return true;}};
+        gTerm[7] = new EdgeEnd(0, 0) {
+            public boolean action() {
+                System.out.println("End Term");
+                return true;
+            }
+        };
 
         // Für gStatement
-        gStatement[0] = new EdgeToken(lexer.new Token(TokenType.IDENT, null), 8, 1) {public boolean action() {System.out.println("Start Statement"); return true;}};
+        gStatement[0] = new EdgeToken(lexer.new Token(TokenType.IDENT, null), 8, 1) {
+            public boolean action() {
+                System.out.println("Start Statement");
+                return true;
+            }
+        };
         gStatement[1] = new EdgeSymbol(Token_Value.IF.value, 9, 2);
         gStatement[2] = new EdgeSymbol(Token_Value.WHILE.value, 10, 3);
         gStatement[3] = new EdgeSymbol(Token_Value.BEGIN.value, 11, 4);
@@ -141,18 +187,41 @@ public class Parser extends Lexer {
         gStatement[19] = new EdgeSymbol(Token_Value.END.value, 22, 0);
         gStatement[20] = new EdgeGraph(gStatement, 22, 0);
         gStatement[21] = new EdgeGraph(gStatement, 22, 0);
-        gStatement[22] = new EdgeEnd(0, 0){public boolean action() {System.out.println("End Statement"); return true;}};
+        gStatement[22] = new EdgeEnd(0, 0) {
+            public boolean action() {
+                System.out.println("End Statement");
+                return true;
+            }
+        };
 
         // Für gFact
-        gFact[0] = new EdgeToken(lexer.new Token(TokenType.IDENT, null), 5, 1) {public boolean action() {System.out.println("Start Factor");; return true;}};
+        gFact[0] = new EdgeToken(lexer.new Token(TokenType.IDENT, null), 5, 1) {
+            public boolean action() {
+                System.out.println("Start Factor");
+                ;
+                return true;
+            }
+        };
         gFact[1] = new EdgeToken(lexer.new Token(TokenType.NUM, null), 5, 2);
         gFact[2] = new EdgeSymbol((int) '(', 3, 0);
         gFact[3] = new EdgeGraph(gExpr, 4, 0);
         gFact[4] = new EdgeSymbol((int) ')', 5, 0);
-        gFact[5] = new EdgeEnd(0, 0) {public boolean action() {System.out.println("End Factor");; return true;}};
+        gFact[5] = new EdgeEnd(0, 0) {
+            public boolean action() {
+                System.out.println("End Factor");
+                ;
+                return true;
+            }
+        };
 
         // Für gCondition
-        gCondition[0] = new EdgeSymbol(Token_Value.ODD.value, 2, 1) {public boolean action() {System.out.println("Start Condition");; return true;}};
+        gCondition[0] = new EdgeSymbol(Token_Value.ODD.value, 2, 1) {
+            public boolean action() {
+                System.out.println("Start Condition");
+                ;
+                return true;
+            }
+        };
         gCondition[1] = new EdgeGraph(gExpr, 3, 0);
         gCondition[2] = new EdgeGraph(gExpr, 5, 0);
         gCondition[3] = new EdgeSymbol(Token_Value.EQ.value, 9, 4);
@@ -162,7 +231,13 @@ public class Parser extends Lexer {
         gCondition[7] = new EdgeSymbol(Token_Value.LE.value, 9, 4);
         gCondition[8] = new EdgeSymbol(Token_Value.GE.value, 9, 4);
         gCondition[9] = new EdgeGraph(gExpr, 10, 0);
-        gCondition[10] = new EdgeEnd(0, 0) {public boolean action() {System.out.println("End Condition");; return true;}};
+        gCondition[10] = new EdgeEnd(0, 0) {
+            public boolean action() {
+                System.out.println("End Condition");
+                ;
+                return true;
+            }
+        };
     }
 
     boolean parse(Edge[] graph) throws Exception {
@@ -171,23 +246,49 @@ public class Parser extends Lexer {
         if (t.type == TokenType.NIL) {
             t = lexer.getNextToken();
         }
+        int i = 0;
+        System.out.println(t.type + " " + t.value);
 
         while (true) {
-            if (edge instanceof EdgeNil) success = true;
-            if (edge instanceof EdgeSymbol) success = (t.value != "" && ((EdgeSymbol)edge).symbol == (t.value).charAt(0));
-            if (edge instanceof EdgeToken) success = (((EdgeToken)edge).token == t);
-            if (edge instanceof EdgeGraph) success = parse(((EdgeGraph)edge).graph);
-            if (edge instanceof EdgeEnd) return true;
+
+            System.out.println(i + " " + edge.getClass().getName());
+            i++;
+            if (edge instanceof EdgeNil) {
+                success = true;
+                System.out.println("new Nil");
+            }
+            if (edge instanceof EdgeSymbol) {
+                success = (((EdgeSymbol) edge).symbol == (t.value).charAt(0));
+                System.out.println("new Symbol " + t.value);
+            }
+            if (edge instanceof EdgeToken) {
+                success = (((EdgeToken) edge).token == t);
+                System.out.println("new Token " + t.value);
+            }
+            if (edge instanceof EdgeGraph) {
+                System.out.println("new Graph " + t.value);
+                success = parse(((EdgeGraph) edge).graph);
+
+            }
+            if (edge instanceof EdgeEnd) {
+                System.out.println("new End");
+                return true;
+            }
 
             success = success && edge.action();
 
             if (!success) {
-                if (edge.alt != 0) edge = graph[edge.alt];
-                else return false;
+                if (edge.alt != 0) {
+                    System.out.println("Alternative");
+                    edge = graph[edge.alt];
+                } else
+                    return false;
             } else {
-                if (edge instanceof EdgeSymbol || edge instanceof EdgeToken) t = lexer.getNextToken();
+                if (edge instanceof EdgeSymbol || edge instanceof EdgeToken)
+                    t = lexer.getNextToken();
                 edge = graph[edge.next];
             }
+            System.out.println("\n");
         }
     }
 
