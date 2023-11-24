@@ -47,7 +47,6 @@ public class Lexer {
         currentTokenValue = new String();
         currentToken = new String();
     }
-    
 
     class Token {
         public TokenType type;
@@ -61,6 +60,8 @@ public class Lexer {
         public Token(TokenType type, String value) {
             this.type = type;
             this.value = value;
+            this.col = t.col;
+            this.line = t.line;
         }
     }
 
@@ -94,6 +95,11 @@ public class Lexer {
     void fl() {
         try {
             currentChar = (char) reader.read();
+            if (currentChar == '\n') {
+                t.line++;
+                t.col = 0;
+            } else
+                t.col++;
         } catch (Exception e) {
             System.out.println("Fehler: " + e);
             System.exit(-1);
@@ -119,13 +125,13 @@ public class Lexer {
                 t = schlwort();
                 break;
             case 6: // :=
-            t = new Token(TokenType.SYM, ""+Token_Value.EQ.value);
+                t = new Token(TokenType.SYM, "" + Token_Value.EQ.value);
                 break;
             case 7: // <=
-                t = new Token(TokenType.SYM, ""+Token_Value.LE.value);
+                t = new Token(TokenType.SYM, "" + Token_Value.LE.value);
                 break;
             case 8: // >=
-                t = new Token(TokenType.SYM, ""+Token_Value.GE.value);
+                t = new Token(TokenType.SYM, "" + Token_Value.GE.value);
                 break;
         }
         end = true;
@@ -224,7 +230,8 @@ public class Lexer {
         currentTokenValue = "";
         currentToken = "";
         end = false;
-        if (t.type == TokenType.SYM && t.value == ".") return t;
+        if (t.type == TokenType.SYM && t.value == ".")
+            return t;
         while (!end) {
             try {
                 zeichenklasse = zeichenklassen[currentChar];
