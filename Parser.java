@@ -1,4 +1,76 @@
 public class Parser extends Lexer {
+
+    // Namensliste
+
+    public Const createConst(long val) {
+        
+    }
+
+    public Const searchConst(long val) {
+
+    }
+
+    public int createVar() {
+
+    }
+
+    public Proc createProc(Proc parent) {
+
+    }
+
+    public Identifier createIdentifier(String identifier) {
+
+    }
+
+    public Indentifier searchIdentifier(Proc procedure, String identifier) {
+
+    }
+
+    public Ifentifier searchIdentifierGlobal(String identifier) {
+
+    }
+
+    public class Identifier {
+        short indexProc;
+        Object object;
+        int len;
+        String name;
+
+        public Identifier(short idxProc, Object obj, int l, String n) {
+            this.indexProc = idxProc;
+            this.object = obj;
+            this.len = l;
+            this.name = n;
+        }
+    }
+
+    public class Var {
+        int address;
+
+        public Var(int address) {
+            this.address = address;
+        }
+    }
+
+    public class Const {
+        long value;
+        int index;
+
+        public Const(long val, int idx) {
+            this.value = val;
+            this.index = idx;
+        }
+    }
+
+    public class Proc {
+        short index;
+        
+        Proc parent;
+
+
+    }
+
+
     public class Edge {
         int next;
         int alt;
