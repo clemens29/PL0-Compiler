@@ -1,71 +1,108 @@
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 public class Parser extends Lexer {
 
     // Namensliste
 
-    public Const createConst(long val) {
-        
-    }
+    public List<Identifier> identifierList = new ArrayList<Identifier>();
+    public List<Var> varList = new ArrayList<Var>();
+    public List<Const> constList = new ArrayList<Const>();
+    public List<Proc> procList = new ArrayList<Proc>();
+    public Proc currentProc;
+    int currentProcIndex = 0;
 
     public Const searchConst(long val) {
+        for (Const c : constList) {
+            if (c.value == val) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public Identifier searchIdentifier(Proc procedure, String identifier) {
+        for (Identifier i : identifierList) {
+            if (i.name.equals(identifier) && i.indexProc == procedure.index) {
+                return i;
+            }
+        }
+        return null;
 
     }
 
-    public int createVar() {
+    public Identifier searchIdentifierGlobal(String identifier) {
+        for (Identifier i : identifierList) {
+            if (i.name.equals(identifier) && i.indexProc == 0) {
+                return i;
+            }
+        }
+        return null;
 
-    }
-
-    public Proc createProc(Proc parent) {
-
-    }
-
-    public Identifier createIdentifier(String identifier) {
-
-    }
-
-    public Indentifier searchIdentifier(Proc procedure, String identifier) {
-
-    }
-
-    public Ifentifier searchIdentifierGlobal(String identifier) {
 
     }
 
     public class Identifier {
-        short indexProc;
-        Object object;
-        int len;
+        int indexProc;
         String name;
 
-        public Identifier(short idxProc, Object obj, int l, String n) {
-            this.indexProc = idxProc;
-            this.object = obj;
-            this.len = l;
-            this.name = n;
+        public Identifier(int indexProc, Object o, int address, String n) {
+            if (currentProc != null) {
+                this.indexProc = currentProc.index;
+            } else {
+                this.indexProc = 0;
+            }
+            name = n;
         }
     }
 
-    public class Var {
+    public class Var{
         int address;
 
-        public Var(int address) {
-            this.address = address;
+        public Var() {
+            this.address = currentProc.address;
+            currentProc.address += 4;
+            currentProc.list.add(new Identifier(currentProc.index, this, 0, "var"));
         }
     }
 
-    public class Const {
+    public class Const{
         long value;
         int index;
 
-        public Const(long val, int idx) {
+        public Const(long val) {
             this.value = val;
-            this.index = idx;
+            this.index = constList.size();
+            if (searchConst(val) == null) {
+                constList.add(this);
+            }
+            else {
+                this.index = searchConst(val).index;
+            }
+            currentProc.list.add(new Identifier(currentProc.index, this, 0, "const"));
         }
     }
 
-    public class Proc {
-        short index;
-        
+    public class Proc{
+        int index;
         Proc parent;
+        LinkedList<Identifier> list;
+        int address;
+        
+        public Proc() {
+            list = new LinkedList<Identifier>();
+            address = 0;
+            if (currentProc != null) {
+                currentProc.list.add(new Identifier(currentProc.index, this, 0, "proc"));
+                parent = currentProc;
+            } else {
+                parent = null;
+            }
+            index = currentProcIndex;
+            currentProcIndex++;
+        }
+
 
 
     }
