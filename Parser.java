@@ -39,8 +39,6 @@ public class Parser extends Lexer {
             }
         }
         return null;
-
-
     }
 
     public class Identifier {
@@ -102,11 +100,7 @@ public class Parser extends Lexer {
             index = currentProcIndex;
             currentProcIndex++;
         }
-
-
-
     }
-
 
     public class Edge {
         int next;
@@ -185,23 +179,88 @@ public class Parser extends Lexer {
 
         // Für gBlock
         gBlock[0] = new EdgeSymbol(Token_Value.CONST.value, 1, 6);
-        gBlock[1] = new EdgeToken(lexer.new Token(TokenType.IDENT, null), 2, 0);
+        gBlock[1] = new EdgeToken(lexer.new Token(TokenType.IDENT, null), 2, 0) {
+            @Override
+            public boolean action() {
+                if (searchIdentifierGlobal(t.value) == null) {
+                    identifierList.add(new Identifier(0, this, 0, t.value));
+                }
+                else {
+                    return false;
+                }
+                return true;
+            }
+        };
         gBlock[2] = new EdgeSymbol((int) '=', 3, 0);
-        gBlock[3] = new EdgeToken(lexer.new Token(TokenType.NUM, null), 4, 0);
+        gBlock[3] = new EdgeToken(lexer.new Token(TokenType.NUM, null), 4, 0) {
+            @Override
+            public boolean action() {
+                Const tmp = new Const(Long.parseLong(t.value));
+                if (searchConst(Long.parseLong(t.value)) == null) {
+                    constList.add(tmp);
+                }
+                else {
+                    tmp.index = searchConst(Long.parseLong(t.value)).index;
+                }
+                return true;
+            }
+        };
         gBlock[4] = new EdgeSymbol((int) ',', 1, 5);
         gBlock[5] = new EdgeSymbol((int) ';', 7, 0);
         gBlock[6] = new EdgeNil(7, 0);
         gBlock[7] = new EdgeSymbol(Token_Value.VAR.value, 8, 11);
-        gBlock[8] = new EdgeToken(lexer.new Token(TokenType.IDENT, null), 9, 0);
+        gBlock[8] = new EdgeToken(lexer.new Token(TokenType.IDENT, null), 9, 0) {
+            @Override
+            public boolean action() {
+                if (searchIdentifier(currentProc, t.value) == null) {
+                    identifierList.add(new Identifier(currentProc.index, this, 0, t.value));
+                }
+                else {
+                    return false;
+                }
+                return true;
+            }
+        };
         gBlock[9] = new EdgeSymbol((int) ',', 8, 10);
         gBlock[10] = new EdgeSymbol((int) ';', 12, 0);
         gBlock[11] = new EdgeNil(12, 0);
         gBlock[12] = new EdgeSymbol(Token_Value.PROCEDURE.value, 13, 17);
-        gBlock[13] = new EdgeToken(lexer.new Token(TokenType.IDENT, null), 14, 0);
+        gBlock[13] = new EdgeToken(lexer.new Token(TokenType.IDENT, null), 14, 0) {
+            @Override
+            public boolean action() {
+                if (searchIdentifier(currentProc, t.value) == null) {
+                    identifierList.add(new Identifier(currentProc.index, this, 0, t.value));
+                }
+                else {
+                    return false;
+                }
+                Proc tmp = new Proc();
+                tmp.parent = currentProc;
+                tmp.index = currentProcIndex++;
+                currentProc = tmp;
+                return true;
+            }
+        };
         gBlock[14] = new EdgeSymbol((int) ';', 15, 0);
         gBlock[15] = new EdgeGraph(gBlock, 16, 0);
-        gBlock[16] = new EdgeSymbol((int) ';', 12, 0);
-        gBlock[17] = new EdgeNil(18, 0);
+        gBlock[16] = new EdgeSymbol((int) ';', 12, 0) {
+            @Override
+            public boolean action() {
+                currentProc.list.clear();
+                currentProc = currentProc.parent;
+                return true;
+            }
+        };
+        gBlock[17] = new EdgeNil(18, 0) {
+            @Override
+            public boolean action() {
+                // Testausgabe der Namensliste
+                for (Identifier i : identifierList) {
+                    System.out.println(i.name);
+                }
+                return true;
+            }
+        };
         gBlock[18] = new EdgeGraph(gStatement, 19, 0);
         gBlock[19] = new EdgeEnd(0, 0);
 
