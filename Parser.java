@@ -10,7 +10,8 @@ public class Parser extends Lexer {
     public List<Var> varList = new ArrayList<Var>();
     public List<Const> constList = new ArrayList<Const>();
     public List<Proc> procList = new ArrayList<Proc>();
-    public Proc currentProc;
+    static public Proc mainProc;
+    public Proc currentProc = new Proc(0, this, 0, "main");
     int currentProcIndex = 0;
 
     public Const searchConst(long val) {
@@ -41,7 +42,7 @@ public class Parser extends Lexer {
         return null;
     }
 
-    public class Identifier {
+     public class Identifier {
         int indexProc;
         String name;
 
@@ -53,23 +54,31 @@ public class Parser extends Lexer {
             }
             name = n;
         }
+        LinkedList<Identifier> getNameList() {
+            return null;
+        } // debug
     }
 
-    public class Var{
+    public class Var extends Identifier{ 
         int address;
 
-        public Var() {
+        public Var(int indexProc, Object o, int address, String n) {
+            super(indexProc, o, address, n);
             this.address = currentProc.address;
             currentProc.address += 4;
             currentProc.list.add(new Identifier(currentProc.index, this, 0, "var"));
         }
+        LinkedList<Identifier> getNameList() {
+            return null;
+        }
     }
 
-    public class Const{
+    public class Const extends Identifier{
         long value;
         int index;
 
-        public Const(long val) {
+        public Const(long val, int indexProc, Object o, int address, String n) {
+            super(indexProc, o, address, n);
             this.value = val;
             this.index = constList.size();
             if (searchConst(val) == null) {
@@ -79,16 +88,21 @@ public class Parser extends Lexer {
                 this.index = searchConst(val).index;
             }
             currentProc.list.add(new Identifier(currentProc.index, this, 0, "const"));
+            
+        }
+        LinkedList<Identifier> getNameList() {
+            return null;
         }
     }
 
-    public class Proc{
+    public class Proc extends Identifier{
         int index;
         Proc parent;
         LinkedList<Identifier> list;
         int address;
         
-        public Proc() {
+        public Proc(int indexProc, Object o, int address, String n) {
+            super(indexProc, o, address, n);
             list = new LinkedList<Identifier>();
             address = 0;
             if (currentProc != null) {
@@ -99,6 +113,9 @@ public class Parser extends Lexer {
             }
             index = currentProcIndex;
             currentProcIndex++;
+        }
+        LinkedList<Identifier> getNameList() {
+            return list;
         }
     }
 
@@ -172,6 +189,9 @@ public class Parser extends Lexer {
         t = new Token();
         lexer = new Lexer(file);
 
+        mainProc = currentProc;
+        
+
         // Für gProgramm
         gProgramm[0] = new EdgeGraph(gBlock, 1, 0);
         gProgramm[1] = new EdgeSymbol((int) '.', 2, 0);
@@ -195,7 +215,7 @@ public class Parser extends Lexer {
         gBlock[3] = new EdgeToken(lexer.new Token(TokenType.NUM, null), 4, 0) {
             @Override
             public boolean action() {
-                Const tmp = new Const(Long.parseLong(t.value));
+                Const tmp = new Const(Long.parseLong(t.value), currentProc.index, this, 0, t.value);
                 if (searchConst(Long.parseLong(t.value)) == null) {
                     constList.add(tmp);
                 }
@@ -234,7 +254,7 @@ public class Parser extends Lexer {
                 else {
                     return false;
                 }
-                Proc tmp = new Proc();
+                Proc tmp = new Proc(currentProc.index, this, 0, t.value);
                 tmp.parent = currentProc;
                 tmp.index = currentProcIndex++;
                 currentProc = tmp;
@@ -246,7 +266,9 @@ public class Parser extends Lexer {
         gBlock[16] = new EdgeSymbol((int) ';', 12, 0) {
             @Override
             public boolean action() {
-                currentProc.list.clear();
+                //currentProc.list.clear();
+                // aktuelle namensliste ausgeben
+                System.out.println("Aktuelle Namensliste:");
                 currentProc = currentProc.parent;
                 return true;
             }
@@ -254,10 +276,6 @@ public class Parser extends Lexer {
         gBlock[17] = new EdgeNil(18, 0) {
             @Override
             public boolean action() {
-                // Testausgabe der Namensliste
-                for (Identifier i : identifierList) {
-                    System.out.println(i.name);
-                }
                 return true;
             }
         };
@@ -378,6 +396,33 @@ public class Parser extends Lexer {
                 edge = graph[edge.next];
             }
         }
+
+    }
+    int i=0;
+
+    void printVersatz(){
+            for(int j=0; j<i; j++)System.out.print(" ");
+    }
+
+    String identClass(Identifier id){
+        if(id instanceof Proc)return "Procedure";
+        if(id instanceof Var)return "Variable";
+        if(id instanceof Const)return "Constant";
+        else return "Ident";
+    }
+    
+
+    void printNamelist(LinkedList<Identifier> namelist){
+        int j=0;
+        for(int k=0; k<namelist.size(); k++){
+            printVersatz(); System.out.println(j+ ": "+ identClass(namelist.get(k))+ " - "+ namelist.get(k).name);
+            if(namelist.get(k) instanceof Proc){
+                i++;
+                printNamelist(namelist.get(k).getNameList());
+                i--;
+            }
+            j++;
+        }
     }
 
     public static void main(String[] args) throws Exception {
@@ -392,6 +437,8 @@ public class Parser extends Lexer {
             } else {
                 System.out.println("Fehler beim Parsen.");
             }
+            Parser.printNamelist(mainProc.list);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
