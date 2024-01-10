@@ -6,26 +6,15 @@ public class Parser extends Lexer {
 
     // Namensliste
 
-    public List<Identifier> identifierList = new ArrayList<Identifier>();
-    public List<Var> varList = new ArrayList<Var>();
-    public List<Const> constList = new ArrayList<Const>();
-    public List<Proc> procList = new ArrayList<Proc>();
-    static public Proc mainProc;
-    public Proc currentProc = new Proc(0, this, 0, "main");
-    int currentProcIndex = 0;
-
-    public Const searchConst(long val) {
-        for (Const c : constList) {
-            if (c.value == val) {
-                return c;
-            }
-        }
-        return null;
-    }
+    public ArrayList<Long> constList;
+    static Proc mainProc;
+    Proc currentProc;
+    int procCount;
+    String lastIdent;
 
     public Identifier searchIdentifier(Proc procedure, String identifier) {
-        for (Identifier i : identifierList) {
-            if (i.name.equals(identifier) && i.indexProc == procedure.index) {
+        for (Identifier i : procedure.list) {
+            if (i.name.equals(identifier)) {
                 return i;
             }
         }
@@ -34,15 +23,18 @@ public class Parser extends Lexer {
     }
 
     public Identifier searchIdentifierGlobal(String identifier) {
-        for (Identifier i : identifierList) {
-            if (i.name.equals(identifier) && i.indexProc == 0) {
+        Proc p = currentProc;
+        do {
+            Identifier i = searchIdentifier(p, identifier);
+            if (i != null) {
                 return i;
             }
-        }
+            p = p.parent;
+        } while (p.index == 0);
         return null;
     }
 
-     public class Identifier {
+    public class Identifier {
         int indexProc;
         String name;
 
@@ -53,67 +45,68 @@ public class Parser extends Lexer {
                 this.indexProc = 0;
             }
             name = n;
+
         }
+
         LinkedList<Identifier> getNameList() {
             return null;
         } // debug
     }
 
-    public class Var extends Identifier{ 
+    public class Var extends Identifier {
         int address;
 
         public Var(int indexProc, Object o, int address, String n) {
             super(indexProc, o, address, n);
-            this.address = currentProc.address;
-            currentProc.address += 4;
-            currentProc.list.add(new Identifier(currentProc.index, this, 0, "var"));
+            address = currentProc.varAddress;
+            currentProc.varAddress += 4;
+            currentProc.list.add(this);
         }
+
         LinkedList<Identifier> getNameList() {
             return null;
         }
     }
 
-    public class Const extends Identifier{
+    public class Const extends Identifier {
         long value;
         int index;
 
         public Const(long val, int indexProc, Object o, int address, String n) {
             super(indexProc, o, address, n);
-            this.value = val;
-            this.index = constList.size();
-            if (searchConst(val) == null) {
-                constList.add(this);
+            if (constList.contains(val)) {
+                index = constList.indexOf(val);
+            } else {
+                constList.add(val);
+                index = constList.indexOf(val);
             }
-            else {
-                this.index = searchConst(val).index;
-            }
-            currentProc.list.add(new Identifier(currentProc.index, this, 0, "const"));
-            
+            currentProc.list.add(this);
         }
+
         LinkedList<Identifier> getNameList() {
             return null;
         }
     }
 
-    public class Proc extends Identifier{
+    public class Proc extends Identifier {
         int index;
         Proc parent;
         LinkedList<Identifier> list;
-        int address;
-        
+        int varAddress;
+
         public Proc(int indexProc, Object o, int address, String n) {
             super(indexProc, o, address, n);
             list = new LinkedList<Identifier>();
-            address = 0;
+            varAddress = 0;
             if (currentProc != null) {
-                currentProc.list.add(new Identifier(currentProc.index, this, 0, "proc"));
+                currentProc.list.add(this);
                 parent = currentProc;
             } else {
                 parent = null;
             }
-            index = currentProcIndex;
-            currentProcIndex++;
+            index = procCount++;
         }
+
         LinkedList<Identifier> getNameList() {
             return list;
         }
@@ -189,8 +182,9 @@ public class Parser extends Lexer {
         t = new Token();
         lexer = new Lexer(file);
 
+        currentProc = new Proc(0, 0, 0, "main");
         mainProc = currentProc;
-        
+        constList = new ArrayList<Long>();
 
         // Für gProgramm
         gProgramm[0] = new EdgeGraph(gBlock, 1, 0);
@@ -204,8 +198,7 @@ public class Parser extends Lexer {
             public boolean action() {
                 if (searchIdentifierGlobal(t.value) == null) {
                     identifierList.add(new Identifier(0, this, 0, t.value));
-                }
-                else {
+                } else {
                     return false;
                 }
                 return true;
@@ -218,8 +211,7 @@ public class Parser extends Lexer {
                 Const tmp = new Const(Long.parseLong(t.value), currentProc.index, this, 0, t.value);
                 if (searchConst(Long.parseLong(t.value)) == null) {
                     constList.add(tmp);
-                }
-                else {
+                } else {
                     tmp.index = searchConst(Long.parseLong(t.value)).index;
                 }
                 return true;
@@ -234,8 +226,7 @@ public class Parser extends Lexer {
             public boolean action() {
                 if (searchIdentifier(currentProc, t.value) == null) {
                     identifierList.add(new Identifier(currentProc.index, this, 0, t.value));
-                }
-                else {
+                } else {
                     return false;
                 }
                 return true;
@@ -250,8 +241,7 @@ public class Parser extends Lexer {
             public boolean action() {
                 if (searchIdentifier(currentProc, t.value) == null) {
                     identifierList.add(new Identifier(currentProc.index, this, 0, t.value));
-                }
-                else {
+                } else {
                     return false;
                 }
                 Proc tmp = new Proc(currentProc.index, this, 0, t.value);
@@ -266,7 +256,7 @@ public class Parser extends Lexer {
         gBlock[16] = new EdgeSymbol((int) ';', 12, 0) {
             @Override
             public boolean action() {
-                //currentProc.list.clear();
+                // currentProc.list.clear();
                 // aktuelle namensliste ausgeben
                 System.out.println("Aktuelle Namensliste:");
                 currentProc = currentProc.parent;
@@ -398,27 +388,34 @@ public class Parser extends Lexer {
         }
 
     }
-    int i=0;
 
-    void printVersatz(){
-            for(int j=0; j<i; j++)System.out.print(" ");
+    int i = 0;
+
+    void printVersatz() {
+        for (int j = 0; j < i; j++)
+            System.out.print(" ");
     }
 
-    String identClass(Identifier id){
-        if(id instanceof Proc)return "Procedure";
-        if(id instanceof Var)return "Variable";
-        if(id instanceof Const)return "Constant";
-        else return "Ident";
+    String identClass(Identifier id) {
+        if (id instanceof Proc)
+            return "Procedure";
+        if (id instanceof Var)
+            return "Variable";
+        if (id instanceof Const)
+            return "Constant";
+        else
+            return "Ident";
     }
-    
 
-    void printNamelist(LinkedList<Identifier> namelist){
-        int j=0;
-        for(int k=0; k<namelist.size(); k++){
-            printVersatz(); System.out.println(j+ ": "+ identClass(namelist.get(k))+ " - "+ namelist.get(k).name);
-            if(namelist.get(k) instanceof Proc){
+    void printNamelist(LinkedList<Identifier> namelist) {
+        int j = 0;
+        for (Identifier id : namelist) {
+            printVersatz();
+            System.out.println(j + ": " + identClass(id) + " - " + id.name);
+
+            if (id instanceof Proc) {
                 i++;
-                printNamelist(namelist.get(k).getNameList());
+                printNamelist(((Proc) id).list);
                 i--;
             }
             j++;
