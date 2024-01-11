@@ -196,11 +196,13 @@ public class Parser extends Lexer {
         gBlock[1] = new EdgeToken(lexer.new Token(TokenType.IDENT, null), 2, 0) {
             @Override
             public boolean action() {
-                if (searchIdentifierGlobal(t.value) == null) {
-                    identifierList.add(new Identifier(0, this, 0, t.value));
+                if (searchIdentifier(currentProc, t.value) == null) {
+                    new Var(currentProc.index, this, 0, t.value);
                 } else {
+                    System.out.println("Error: Variable " + t.value + " already exists");
                     return false;
                 }
+                lastIdent = t.value;
                 return true;
             }
         };
@@ -208,12 +210,7 @@ public class Parser extends Lexer {
         gBlock[3] = new EdgeToken(lexer.new Token(TokenType.NUM, null), 4, 0) {
             @Override
             public boolean action() {
-                Const tmp = new Const(Long.parseLong(t.value), currentProc.index, this, 0, t.value);
-                if (searchConst(Long.parseLong(t.value)) == null) {
-                    constList.add(tmp);
-                } else {
-                    tmp.index = searchConst(Long.parseLong(t.value)).index;
-                }
+                new Const (Long.parseLong(t.value), currentProc.index, this, 0, lastIdent);
                 return true;
             }
         };
@@ -225,8 +222,9 @@ public class Parser extends Lexer {
             @Override
             public boolean action() {
                 if (searchIdentifier(currentProc, t.value) == null) {
-                    identifierList.add(new Identifier(currentProc.index, this, 0, t.value));
+                    new Var(currentProc.index, this, 0, t.value);
                 } else {
+                    System.out.println("Error: Variable " + t.value + " already exists");
                     return false;
                 }
                 return true;
@@ -240,14 +238,11 @@ public class Parser extends Lexer {
             @Override
             public boolean action() {
                 if (searchIdentifier(currentProc, t.value) == null) {
-                    identifierList.add(new Identifier(currentProc.index, this, 0, t.value));
+                    currentProc = new Proc(currentProc.index, this, 0, t.value);
                 } else {
+                    System.out.println("Error: Procedure " + t.value + " already exists");
                     return false;
                 }
-                Proc tmp = new Proc(currentProc.index, this, 0, t.value);
-                tmp.parent = currentProc;
-                tmp.index = currentProcIndex++;
-                currentProc = tmp;
                 return true;
             }
         };
@@ -256,10 +251,6 @@ public class Parser extends Lexer {
         gBlock[16] = new EdgeSymbol((int) ';', 12, 0) {
             @Override
             public boolean action() {
-                // currentProc.list.clear();
-                // aktuelle namensliste ausgeben
-                System.out.println("Aktuelle Namensliste:");
-                currentProc = currentProc.parent;
                 return true;
             }
         };
@@ -269,7 +260,14 @@ public class Parser extends Lexer {
                 return true;
             }
         };
-        gBlock[18] = new EdgeGraph(gStatement, 19, 0);
+        gBlock[18] = new EdgeGraph(gStatement, 19, 0) {
+            @Override
+            public boolean action() {
+                //currentProc.list.clear();
+                //currentProc = currentProc.parent;
+                return true;
+            }
+        };
         gBlock[19] = new EdgeEnd(0, 0);
 
         // Für gExpr
