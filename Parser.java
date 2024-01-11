@@ -1,6 +1,6 @@
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 public class Parser extends Lexer {
 
@@ -11,6 +11,14 @@ public class Parser extends Lexer {
     Proc currentProc;
     int procCount;
     String lastIdent;
+
+    // Codegenerierung
+
+    byte[] code;
+    int codeSize;
+    int codeAddress;
+
+    File outFile;
 
     public Identifier searchIdentifier(Proc procedure, String identifier) {
         for (Identifier i : procedure.list) {
@@ -186,6 +194,9 @@ public class Parser extends Lexer {
         mainProc = currentProc;
         constList = new ArrayList<Long>();
 
+        outFile = new File("out.bin");
+        
+
         // Für gProgramm
         gProgramm[0] = new EdgeGraph(gBlock, 1, 0);
         gProgramm[1] = new EdgeSymbol((int) '.', 2, 0);
@@ -263,8 +274,8 @@ public class Parser extends Lexer {
         gBlock[18] = new EdgeGraph(gStatement, 19, 0) {
             @Override
             public boolean action() {
-                //currentProc.list.clear();
-                //currentProc = currentProc.parent;
+                currentProc.list.clear();
+                currentProc = currentProc.parent;
                 return true;
             }
         };
